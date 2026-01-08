@@ -3,7 +3,7 @@ version: "3.9"
 services:
   system_monitor_bot:
     build:
-      context: ../../bots/system_monitor
+      context: ../../bots/system_monitoring
       dockerfile: Dockerfile
 
     container_name: system_monitoring_bot
