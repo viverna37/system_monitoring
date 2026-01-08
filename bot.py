@@ -7,6 +7,7 @@ from config import load_config
 from handlers.system_status import router as system_status
 from handlers.docker_status import router as docker_status
 from handlers.docker_stats import router as docker_stats
+from tasks.temperature_alerts import TemperatureMonitor
 
 
 async def main():
@@ -17,6 +18,16 @@ async def main():
     dp.include_router(system_status)
     dp.include_router(docker_status)
     dp.include_router(docker_stats)
+
+    temp_monitor = TemperatureMonitor(
+        warn=75,
+        critical=85,
+        interval=30,
+    )
+
+    asyncio.create_task(
+        temp_monitor.run(bot, config.tg_bot.admin_ids)
+    )
 
     await dp.start_polling(bot)
 

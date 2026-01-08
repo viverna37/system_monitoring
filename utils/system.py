@@ -2,7 +2,6 @@ import psutil
 import time
 from typing import Optional
 
-
 GB = 1024 ** 3
 
 
@@ -15,52 +14,36 @@ def format_uptime(seconds: int) -> str:
 
 def get_cpu_temperature() -> Optional[float]:
     """
-    Возвращает реальную температуру CPU (Tdie / Package),
-    максимально близкую к выводу `sensors`.
-    Работает для AMD и Intel.
+    Возвращает реальную температуру CPU (как sensors).
+    AMD / Intel, без ACPI-помойки.
     """
     temps = psutil.sensors_temperatures()
     if not temps:
         return None
 
-    # Приоритетные чипы
-    CHIP_PRIORITY = (
-        "k10temp",     # AMD
-        "coretemp",    # Intel
-        "cpu_thermal",
-    )
-
-    # Приоритетные лейблы
-    LABEL_PRIORITY = (
-        "Tdie",
-        "Tctl",
-        "Package",
-        "CPU",
-    )
-
-    # 1. Пробуем найти правильный чип
-    for chip in CHIP_PRIORITY:
+    # приоритетные чипы
+    for chip in ("k10temp", "coretemp"):
         if chip in temps:
             for entry in temps[chip]:
                 if entry.current is not None:
                     return float(entry.current)
 
-    # 2. Пробуем найти по label
+    # fallback — по label
     for entries in temps.values():
         for entry in entries:
-            if entry.label:
-                for label in LABEL_PRIORITY:
-                    if label.lower() in entry.label.lower():
-                        return float(entry.current)
+            if entry.label and any(
+                k in entry.label.lower()
+                for k in ("tdie", "tctl", "package", "cpu")
+            ):
+                return float(entry.current)
 
-    # 3. Фолбэк: берём максимальную температуру
+    # последний шанс — максимум (лучше, чем acpitz)
     values = [
         entry.current
         for entries in temps.values()
         for entry in entries
         if entry.current is not None
     ]
-
     return float(max(values)) if values else None
 
 
@@ -69,36 +52,29 @@ def get_system_status() -> dict:
     disk = psutil.disk_usage("/")
     net = psutil.net_io_counters()
 
-    uptime_seconds = int(time.time() - psutil.boot_time())
-
     return {
         "cpu": {
             "percent": psutil.cpu_percent(interval=1),
             "cores_logical": psutil.cpu_count(),
             "cores_physical": psutil.cpu_count(logical=False),
-            "freq_mhz": psutil.cpu_freq().current if psutil.cpu_freq() else None,
+            "freq": psutil.cpu_freq().current if psutil.cpu_freq() else None,
             "temp": get_cpu_temperature(),
         },
         "ram": {
-            "used_gb": round(vm.used / GB, 2),
-            "total_gb": round(vm.total / GB, 2),
+            "used": vm.used / GB,
+            "total": vm.total / GB,
             "percent": vm.percent,
         },
         "disk": {
-            "used_gb": round(disk.used / GB, 2),
-            "total_gb": round(disk.total / GB, 2),
+            "used": disk.used / GB,
+            "total": disk.total / GB,
             "percent": disk.percent,
         },
         "net": {
-            "sent_gb": round(net.bytes_sent / GB, 3),
-            "recv_gb": round(net.bytes_recv / GB, 3),
+            "sent": net.bytes_sent / GB,
+            "recv": net.bytes_recv / GB,
         },
         "processes": len(psutil.pids()),
-        "uptime": format_uptime(uptime_seconds),
+        "uptime": int(time.time() - psutil.boot_time()),
         "load": psutil.getloadavg(),
     }
-
-
-if __name__ == "__main__":
-    from pprint import pprint
-    pprint(get_system_status())
