@@ -6,6 +6,7 @@ from aiogram.enums import ParseMode
 from config import load_config
 from handlers.system_status import router as system_status
 from handlers.docker_status import router as docker_status
+from handlers.docker_stats import router as docker_stats
 
 
 async def main():
@@ -15,6 +16,7 @@ async def main():
 
     dp.include_router(system_status)
     dp.include_router(docker_status)
+    dp.include_router(docker_stats)
 
     await dp.start_polling(bot)
 

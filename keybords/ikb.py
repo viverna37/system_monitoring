@@ -8,8 +8,9 @@ class IKB:
         def get_menu() -> InlineKeyboardMarkup:
             keyboard = InlineKeyboardBuilder()
 
-            keyboard.add(InlineKeyboardButton(text="Мониторинг сервера", callback_data="system_monitoring"))
-            keyboard.add(InlineKeyboardButton(text="Мониторинг сервера", callback_data="docker_monitoring"))
+            keyboard.add(InlineKeyboardButton(text="Мониторинг Server", callback_data="system_monitoring"))
+            keyboard.add(InlineKeyboardButton(text="Мониторинг Docker", callback_data="docker_monitoring"))
+            keyboard.add(InlineKeyboardButton(text="Статистика Docker", callback_data="docker_stats"))
 
             keyboard.adjust(1)
 
