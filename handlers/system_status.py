@@ -1,12 +1,19 @@
-from aiogram import Router
-from aiogram.types import Message
+from aiogram import Router, F
+from aiogram.filters import Command
+from aiogram.types import Message, CallbackQuery
+
+from keybords.ikb import IKB
 from utils.system import get_system_status, format_uptime
 
 router = Router()
 
+@router.message(Command('start'))
+async def start(message: Message):
+    await message.answer("Привет, я бот для мониторинга сервера Bozdyrev.Dev\n\n"
+                         "Пользуйся меню ниже", reply_markup=IKB.Menu.get_menu())
 
-@router.message(commands=["status"])
-async def system_status(message: Message):
+@router.callback_query(F.data == "monitoring")
+async def system_status(callback: CallbackQuery):
     s = get_system_status()
 
     cpu = s["cpu"]
@@ -40,4 +47,4 @@ async def system_status(message: Message):
         f"• Uptime: {format_uptime(s['uptime'])}"
     )
 
-    await message.answer(text, parse_mode="HTML")
+    await callback.message.answer(text, parse_mode="HTML")
