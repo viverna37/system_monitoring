@@ -12,7 +12,7 @@ async def start(message: Message):
     await message.answer("Привет, я бот для мониторинга сервера Bozdyrev.Dev\n\n"
                          "Пользуйся меню ниже", reply_markup=IKB.Menu.get_menu())
 
-@router.callback_query(F.data == "monitoring")
+@router.callback_query(F.data == "system_monitoring")
 async def system_status(callback: CallbackQuery):
     s = get_system_status()
 
