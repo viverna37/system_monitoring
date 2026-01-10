@@ -43,6 +43,7 @@ async def docker_stats(callback: CallbackQuery):
 @router.callback_query(F.data.startswith("card_"))
 async def open_card(callback: CallbackQuery):
     name = callback.data.split("_")[1]
+    print(name)
     c = get_container_by_name(name)
     await callback.answer()
     text = ""
