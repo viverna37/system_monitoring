@@ -35,17 +35,16 @@ async def docker_stats(callback: CallbackQuery):
 
     keybord = InlineKeyboardBuilder()
     for i in containers:
-        keybord.add(InlineKeyboardButton(text=i['image'], callback_data=f"card_{i['name']}"))
+        keybord.add(InlineKeyboardButton(text=i['image'], callback_data=f"card:{i['name']}"))
     keybord.add(InlineKeyboardButton(text="Назад", callback_data="back_2"))
     keybord.adjust(1)
     await callback.message.edit_text(text=text, reply_markup=keybord.as_markup())
     await callback.answer()
 
 
-@router.callback_query(F.data.startswith("card_"))
+@router.callback_query(F.data.startswith("card:"))
 async def open_card(callback: CallbackQuery):
-    name = callback.data.split("_")[1]
-    logging.Logger(name, level=logging.WARNING)
+    name = callback.data.split(":")[1]
     c = get_container_by_name(name)
     await callback.answer()
     text = ""
