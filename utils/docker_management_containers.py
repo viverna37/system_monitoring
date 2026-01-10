@@ -35,25 +35,30 @@ def get_containers()-> list[dict[str, Any]]:
         })
 
     return result
+from datetime import datetime, timezone
+from typing import Optional
 
-def get_containers_by_name(name: str) -> dict:
-    containers = client.containers.list(all=True)
-    result = {}
-    for c in containers:
-        if c.name == name:
-            started_at = c.attrs["State"].get("StartedAt")
-            uptime = None
 
-            if c.status == "running" and started_at:
-                start_time = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
-                uptime = datetime.now(timezone.utc) - start_time
+def get_container_by_name(name: str) -> Optional[dict]:
+    for c in client.containers.list(all=True):
+        if c.name != name:
+            continue
 
-            result={
-                "name": c.name,
-                "status": c.status,
-                "image": c.image.tags[0] if c.image.tags else "unknown",
-                "uptime": uptime,
-                "id": c.id
-            }
+        started_at = c.attrs["State"].get("StartedAt")
+        uptime = None
 
-    return result
+        if c.status == "running" and started_at:
+            start_time = datetime.fromisoformat(
+                started_at.replace("Z", "+00:00")
+            )
+            uptime = datetime.now(timezone.utc) - start_time
+
+        return {
+            "name": c.name,
+            "status": c.status,
+            "image": c.image.tags[0] if c.image.tags else "unknown",
+            "uptime": uptime,
+            "id": c.id,
+        }
+
+    return None
