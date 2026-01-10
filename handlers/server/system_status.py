@@ -41,4 +41,5 @@ async def system_status(callback: CallbackQuery):
         f"• Uptime: {format_uptime(s['uptime'])}"
     )
 
-    await callback.message.answer(text, parse_mode="HTML")
+    await callback.message.edit_text(text)
+    await callback.answer()

@@ -24,4 +24,5 @@ async def docker_stats(callback: CallbackQuery):
             f"↑ {bytes_to_mb(s['net_tx']):.1f} MB\n\n"
         )
 
-    await callback.message.answer(text, parse_mode="HTML")
+    await callback.message.edit_text(text)
+    await callback.answer()

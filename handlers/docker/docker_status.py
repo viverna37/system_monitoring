@@ -32,4 +32,5 @@ async def docker_status(callback: CallbackQuery):
             f"• uptime: {format_timedelta(c['uptime'])}\n\n"
         )
 
-    await callback.message.answer(text, parse_mode="HTML")
+    await callback.message.edit_text(text, parse_mode="HTML")
+    await callback.answer()

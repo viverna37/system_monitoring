@@ -24,7 +24,7 @@ class IKB:
             keyboard.add(InlineKeyboardButton(text="Создаить схему", callback_data="server_menu"))
             keyboard.add(InlineKeyboardButton(text="Перезапуск", callback_data="server_menu"))
             keyboard.add(InlineKeyboardButton(text="Выключение", callback_data="server_menu"))
-            keyboard.add(InlineKeyboardButton(text="123", callback_data=""))
+            keyboard.add(InlineKeyboardButton(text="123", callback_data="213"))
             keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit"))
 
             return keyboard.as_markup()
