@@ -36,11 +36,11 @@ def get_containers()-> list[dict[str, Any]]:
 
     return result
 
-def get_containers_by_id(id: str) -> dict:
+def get_containers_by_name(name: str) -> dict:
     containers = client.containers.list(all=True)
     result = {}
     for c in containers:
-        if c.id == id:
+        if c.name == name:
             started_at = c.attrs["State"].get("StartedAt")
             uptime = None
 

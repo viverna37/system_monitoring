@@ -33,7 +33,7 @@ async def docker_stats(callback: CallbackQuery):
 
     keybord = InlineKeyboardBuilder()
     for i in containers:
-        keybord.add(InlineKeyboardButton(text=i['image'], callback_data=f"card_{i['id']}"))
+        keybord.add(InlineKeyboardButton(text=i['image'], callback_data=f"card_{i['name']}"))
     keybord.add(InlineKeyboardButton(text="Назад", callback_data="back_2"))
     await callback.message.edit_text(text=text, reply_markup=keybord.as_markup(), parse_mode=None)
     await callback.answer()
@@ -41,8 +41,8 @@ async def docker_stats(callback: CallbackQuery):
 
 @router.callback_query(F.data.startswith("card_"))
 async def open_card(callback: CallbackQuery):
-    id = callback.data.split("_")[1]
-    c = get_containers_by_id(id)
+    name = callback.data.split("_")[1]
+    c = get_containers_by_name(name)
     await callback.answer()
     text = ""
     status_icon = "🟢" if c["status"] == "running" else "🔴"
@@ -54,4 +54,4 @@ async def open_card(callback: CallbackQuery):
     )
 
 
-    await callback.message.answer("Docker card\n", reply_markup=IKB.DockerManagement.get_management_menu(id))
+    await callback.message.answer("Docker card\n", reply_markup=IKB.DockerManagement.get_management_menu(name))
