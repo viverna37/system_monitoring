@@ -6,7 +6,7 @@ import docker
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from keybords.ikb import IKB
-from utils.docker_management_containers import get_containers, format_timedelta, get_containers_by_name
+from utils.docker_management_containers import get_containers, format_timedelta, get_container_by_name
 
 router = Router()
 
@@ -43,7 +43,7 @@ async def docker_stats(callback: CallbackQuery):
 @router.callback_query(F.data.startswith("card_"))
 async def open_card(callback: CallbackQuery):
     name = callback.data.split("_")[1]
-    c = get_containers_by_name(name)
+    c = get_container_by_name(name)
     await callback.answer()
     text = ""
     status_icon = "🟢" if c["status"] == "running" else "🔴"
