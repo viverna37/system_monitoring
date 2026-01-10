@@ -6,7 +6,7 @@ import docker
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from keybords.ikb import IKB
-from utils.docker_management_containers import get_containers, format_timedelta, get_containers_by_id
+from utils.docker_management_containers import get_containers, format_timedelta, get_containers_by_name
 
 router = Router()
 
