@@ -40,6 +40,7 @@ from typing import Optional
 
 
 def get_container_by_name(name: str) -> Optional[dict]:
+    name = name.split("-")[1].split(':')[0]
     for c in client.containers.list(all=True):
         if c.name != name:
             continue
