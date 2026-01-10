@@ -24,6 +24,7 @@ def get_containers():
     containers = client.containers.list(all=True)
     result = []
 
+
     for c in containers:
         started_at = c.attrs["State"].get("StartedAt")
         uptime = None

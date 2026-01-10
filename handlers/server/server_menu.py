@@ -9,7 +9,7 @@ router = Router()
 
 @router.callback_query(F.data == "server_menu")
 async def start(callback: CallbackQuery):
-    await callback.message.answer("Меню управления сервером", reply_markup=IKB.Server.get_menu())
+    await callback.message.edit_text("Меню управления сервером", reply_markup=IKB.Server.get_menu())
 
 @router.callback_query(F.data == "system_monitoring")
 async def system_status(callback: CallbackQuery):

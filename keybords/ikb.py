@@ -26,6 +26,7 @@ class IKB:
             keyboard.add(InlineKeyboardButton(text="Выключение", callback_data="server_menu"))
             keyboard.add(InlineKeyboardButton(text="123", callback_data="213"))
             keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit"))
+            keyboard.adjust(1)
 
             return keyboard.as_markup()
 
@@ -52,6 +53,19 @@ class IKB:
 
             keyboard.add(InlineKeyboardButton(text="Создать схему", callback_data="create_schemas"))
             keyboard.add(InlineKeyboardButton(text="Контейнеры", callback_data="containers"))
+            keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit_2"))
+
+            keyboard.adjust(1)
+
+            return keyboard.as_markup()
+
+        @staticmethod
+        def get_management_menu(id) -> InlineKeyboardMarkup:
+
+            keyboard = InlineKeyboardBuilder()
+
+            keyboard.add(InlineKeyboardButton(text="Перезагрузить", callback_data=f"reboot_{id}"))
+            keyboard.add(InlineKeyboardButton(text="Логи", callback_data="logs_{id}"))
             keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit_2"))
 
             keyboard.adjust(1)
