@@ -35,7 +35,7 @@ async def docker_stats(callback: CallbackQuery):
     for i in containers:
         keybord.add(InlineKeyboardButton(text=i['image'], callback_data=f"card_{i['id']}"))
     keybord.add(InlineKeyboardButton(text="Назад", callback_data="back_2"))
-    await callback.message.edit_text(text=text)
+    await callback.message.edit_text(text=text, reply_markup=keybord.as_markup(), parse_mode=None)
     await callback.answer()
 
 
