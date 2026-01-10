@@ -39,6 +39,7 @@ class IKB:
             keyboard.add(InlineKeyboardButton(text="Статистика Docker", callback_data="docker_stats"))
             keyboard.add(InlineKeyboardButton(text="Управление", callback_data="docker_management"))
             keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit"))
+            keyboard.adjust(1)
 
 
             return keyboard.as_markup()
@@ -53,5 +54,6 @@ class IKB:
             keyboard.add(InlineKeyboardButton(text="Контейнеры", callback_data="containers"))
             keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit_2"))
 
+            keyboard.adjust(1)
 
             return keyboard.as_markup()

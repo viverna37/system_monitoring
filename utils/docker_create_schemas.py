@@ -83,7 +83,7 @@ def create_schemas(
 
     config = load_config()
 
-    for key, value in sql:
+    for key, value in sql.items():
         cmd = [
             "docker", "exec", "-i",
             "postgres",

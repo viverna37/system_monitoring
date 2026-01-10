@@ -15,7 +15,7 @@ async def main():
     bot = Bot(token=config.tg_bot.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
 
-    dp.include_routers(routers)
+    dp.include_routers(*routers)
 
 
     temp_monitor = TemperatureMonitor(
