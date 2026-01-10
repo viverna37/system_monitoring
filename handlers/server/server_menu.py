@@ -7,10 +7,9 @@ from utils.system import get_system_status, format_uptime
 
 router = Router()
 
-@router.message(Command('start'))
+@router.callback_query(F.data == "server_menu")
 async def start(message: Message):
-    await message.answer("Привет, я бот для мониторинга сервера Bozdyrev.Dev\n\n"
-                         "Пользуйся меню ниже", reply_markup=IKB.Menu.get_menu())
+    await message.answer("Меню управления сервером", reply_markup=IKB.Server.get_menu())
 
 @router.callback_query(F.data == "system_monitoring")
 async def system_status(callback: CallbackQuery):

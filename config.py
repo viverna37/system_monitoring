@@ -8,8 +8,14 @@ class TgBot:
     admin_ids: list[int]
 
 @dataclass
+class Server:
+    pgpassword: str
+
+@dataclass
 class Config:
     tg_bot: TgBot
+    server: Server
+
 
 
 
@@ -21,5 +27,6 @@ def load_config(path: str | None = None) -> Config:
         tg_bot=TgBot(
             token=env.str("BOT_TOKEN"),
             admin_ids=list(map(int, env.list("ADMIN_IDS")))
-        )
+        ),
+        server = Server(pgpassword=env.str("PGPASSWORD"))
     )
