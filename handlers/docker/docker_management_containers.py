@@ -19,7 +19,7 @@ async def docker_stats(callback: CallbackQuery):
     exited = len(containers) - running
 
     text = (
-        "Docker containers management</b>\n\n"
+        "<b>Docker containers management</b>\n\n"
         f"📦 Всего контейнеров: {len(containers)}\n"
     )
 
