@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from typing import Any
 
@@ -41,6 +42,7 @@ from typing import Optional
 
 def get_container_by_name(name: str) -> Optional[dict]:
     print(name)
+    logging.Logger(name, level=logging.WARNING)
     for c in client.containers.list(all=True):
         if c.name != name:
             continue

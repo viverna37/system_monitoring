@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Router, F
 
 from aiogram.types import CallbackQuery, InlineKeyboardButton
@@ -43,7 +45,7 @@ async def docker_stats(callback: CallbackQuery):
 @router.callback_query(F.data.startswith("card_"))
 async def open_card(callback: CallbackQuery):
     name = callback.data.split("_")[1]
-    print(name)
+    logging.Logger(name, level=logging.WARNING)
     c = get_container_by_name(name)
     await callback.answer()
     text = ""
