@@ -1,11 +1,9 @@
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram import F, Router
+from aiogram.types import CallbackQuery
 
-from keybords.ikb import IKB
-from utils.system import get_system_status, format_uptime
+from utils.system import format_uptime, get_system_status
 
 router = Router()
-
 
 @router.callback_query(F.data == "system_monitoring")
 async def system_status(callback: CallbackQuery):
@@ -42,5 +40,4 @@ async def system_status(callback: CallbackQuery):
         f"• Uptime: {format_uptime(s['uptime'])}"
     )
 
-    await callback.message.edit_text(text, reply_markup=IKB.Menu.get_menu())
-    await callback.answer()
+    await callback.message.answer(text)

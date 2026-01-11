@@ -6,7 +6,6 @@ client = docker.from_env()
 
 def create_schemas(
     schemas_name: str,
-    schemas_user: str
 ) -> bool:
     """
     Создаёт схему и пользователя в PostgreSQL через Docker API
@@ -14,10 +13,10 @@ def create_schemas(
 
     sql_commands = [
         f"CREATE SCHEMA {schemas_name};",
-        f"CREATE USER {schemas_user} WITH PASSWORD 'super-strong-password';",
-        f"GRANT USAGE, CREATE ON SCHEMA {schemas_name} TO {schemas_user};",
-        f"ALTER ROLE {schemas_user} SET search_path TO {schemas_name};",
-        f"REVOKE ALL ON SCHEMA public FROM {schemas_user};",
+        f"CREATE USER {schemas_name + "_user"} WITH PASSWORD 'super-strong-password';",
+        f"GRANT USAGE, CREATE ON SCHEMA {schemas_name} TO {schemas_name + "_user"};",
+        f"ALTER ROLE {schemas_name + "_user"} SET search_path TO {schemas_name + "_user"};",
+        f"REVOKE ALL ON SCHEMA public FROM {schemas_name + "_user"};",
     ]
 
     config = load_config()

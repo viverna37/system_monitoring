@@ -1,6 +1,11 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.filters.callback_data import CallbackData
 
+
+class LogsCb(CallbackData, prefix="logs"):
+    name: str
+    page: int
 
 class IKB:
     class Menu:
@@ -60,14 +65,60 @@ class IKB:
             return keyboard.as_markup()
 
         @staticmethod
-        def get_management_menu(id) -> InlineKeyboardMarkup:
+        def get_management_menu(name: str) -> InlineKeyboardMarkup:
 
             keyboard = InlineKeyboardBuilder()
 
-            keyboard.add(InlineKeyboardButton(text="Перезагрузить", callback_data=f"reboot_{id}"))
-            keyboard.add(InlineKeyboardButton(text="Логи", callback_data="logs_{id}"))
+            keyboard.add(InlineKeyboardButton(text="Перезагрузить", callback_data=f"reboot:{name}"))
+            keyboard.add(InlineKeyboardButton(text="Логи", callback_data=f"logs:{name}"))
             keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit_2"))
 
             keyboard.adjust(1)
 
             return keyboard.as_markup()
+
+        @staticmethod
+        def get_containers_keyboard(containers: list) -> InlineKeyboardMarkup:
+            keyboard = InlineKeyboardBuilder()
+
+            for i in containers:
+                keyboard.add(InlineKeyboardButton(text=i['image'], callback_data=f"card:{i['name']}"))
+
+            keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back_2"))
+
+            keyboard.adjust(1)
+
+            return keyboard.as_markup()
+        @staticmethod
+        def logs_pagination_kb(
+                name: str,
+                page: int,
+                total: int,
+        ):
+            kb = InlineKeyboardBuilder()
+
+            if page > 0:
+                kb.add(
+                    InlineKeyboardButton(
+                        text="◀️",
+                        callback_data=LogsCb(name=name, page=page - 1).pack()
+                    )
+                )
+
+            kb.add(
+                InlineKeyboardButton(
+                    text=f"{page + 1}/{total}",
+                    callback_data="noop"
+                )
+            )
+
+            if page < total - 1:
+                kb.add(
+                    InlineKeyboardButton(
+                        text="▶️",
+                        callback_data=LogsCb(name=name, page=page + 1).pack()
+                    )
+                )
+
+            kb.adjust(3)
+            return kb.as_markup()

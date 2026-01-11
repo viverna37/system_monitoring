@@ -1,10 +1,14 @@
 import logging
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, List
 
 import docker
 
 client = docker.from_env()
+
+
+def split_text(text: str, limit: int = 1024) -> list[str]:
+    return [text[i:i + limit] for i in range(0, len(text), limit)]
 
 
 def format_timedelta(td) -> str:
@@ -15,7 +19,8 @@ def format_timedelta(td) -> str:
     m, _ = divmod(rem, 60)
     return f"{h}h {m}m"
 
-def get_containers()-> list[dict[str, Any]]:
+
+def get_containers() -> list[dict[str, Any]]:
     containers = client.containers.list(all=True)
     result = []
 
@@ -36,13 +41,13 @@ def get_containers()-> list[dict[str, Any]]:
         })
 
     return result
+
+
 from datetime import datetime, timezone
 from typing import Optional
 
 
 def get_container_by_name(name: str) -> Optional[dict]:
-    print(name)
-    logging.Logger(name, level=logging.WARNING)
     for c in client.containers.list(all=True):
         if c.name != name:
             continue
@@ -65,3 +70,47 @@ def get_container_by_name(name: str) -> Optional[dict]:
         }
 
     return None
+
+
+def reboot_container(name: str) -> bool:
+    """
+    Перезапускает контейнер по имени
+    """
+    try:
+        container = client.containers.get(name)
+        container.restart()
+        return True
+    except docker.errors.NotFound:
+        return False
+    except Exception as e:
+        raise RuntimeError(f"Failed to restart container: {e}")
+
+
+def get_container_logs(
+        name: str,
+        tail: int = 100,
+        limit: int = 1024,
+) -> List[str]:
+    """
+    Возвращает логи контейнера, разбитые на части <= limit
+    """
+    try:
+        container = client.containers.get(name)
+
+        raw_logs = container.logs(
+            tail=tail,
+            stdout=True,
+            stderr=True,
+            timestamps=False,
+        )
+
+        text = raw_logs.decode(errors="ignore").strip()
+        if not text:
+            return ["(logs are empty)"]
+
+        return split_text(text, limit)
+
+    except docker.errors.NotFound:
+        return ["Container not found"]
+    except Exception as e:
+        return [f"Error reading logs: {e}"]

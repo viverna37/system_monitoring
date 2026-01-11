@@ -1,24 +1,20 @@
-import logging
-
 from aiogram import Router, F
 
 from aiogram.types import CallbackQuery, InlineKeyboardButton
 
-import docker
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from keybords.ikb import IKB
-from utils.docker_management_containers import get_containers, format_timedelta, get_container_by_name
+from keybords.ikb import IKB, LogsCb
+from utils.docker_management_containers import get_containers, format_timedelta, get_container_by_name, \
+    reboot_container, get_container_logs
 
 router = Router()
+LOGS_CACHE: dict[str, list[str]] = {}
 
 
 @router.callback_query(F.data == "containers")
 async def docker_stats(callback: CallbackQuery):
     containers = get_containers()
-
-    running = sum(1 for c in containers if c["status"] == "running")
-    exited = len(containers) - running
 
     text = (
         "<b>Docker containers management</b>\n\n"
@@ -33,12 +29,8 @@ async def docker_stats(callback: CallbackQuery):
             f"• uptime: {format_timedelta(c['uptime'])}\n\n"
         )
 
-    keybord = InlineKeyboardBuilder()
-    for i in containers:
-        keybord.add(InlineKeyboardButton(text=i['image'], callback_data=f"card:{i['name']}"))
-    keybord.add(InlineKeyboardButton(text="Назад", callback_data="back_2"))
-    keybord.adjust(1)
-    await callback.message.edit_text(text=text, reply_markup=keybord.as_markup())
+
+    await callback.message.edit_text(text=text, reply_markup=IKB.DockerManagement.get_containers_keyboard(containers))
     await callback.answer()
 
 
@@ -57,4 +49,63 @@ async def open_card(callback: CallbackQuery):
     )
 
 
-    await callback.message.answer("Docker card\n", reply_markup=IKB.DockerManagement.get_management_menu(name))
+    await callback.message.answer(f"Docker card for {name} container\n", reply_markup=IKB.DockerManagement.get_management_menu(name))
+
+@router.callback_query(F.data.startswith("reboot:"))
+async def open_card(callback: CallbackQuery):
+    name = callback.data.split(":")[1]
+    ok = reboot_container(name)
+    if ok:
+        await callback.answer(f"Контейнер {name} успешно перезапущен")
+    else:
+        await callback.answer("Sorry caught traceback :(")
+
+@router.callback_query(F.data.startswith("logs:"))
+async def open_card(callback: CallbackQuery):
+    name = callback.data.split(":")[1]
+
+
+    pages = get_container_logs(name, limit=900)
+    if not pages:
+        await callback.answer("Логи пустые")
+        return
+
+    LOGS_CACHE[name] = pages
+
+    await callback.message.edit_text(
+        text=f"<pre>{pages[0]}</pre>",
+        parse_mode="HTML",
+        reply_markup=IKB.DockerManagement.logs_pagination_kb(
+            name=name,
+            page=0,
+            total=len(pages)
+        )
+    )
+    await callback.answer()
+
+@router.callback_query(LogsCb.filter())
+async def paginate_logs(
+    callback: CallbackQuery,
+    callback_data: LogsCb,
+):
+    name = callback_data.name
+    page = callback_data.page
+
+    pages = LOGS_CACHE.get(name)
+    if not pages:
+        await callback.answer("Логи устарели", show_alert=True)
+        return
+
+    page = max(0, min(page, len(pages) - 1))
+
+    await callback.message.edit_text(
+        text=f"<pre>{pages[page]}</pre>",
+        parse_mode="HTML",
+        reply_markup=IKB.DockerManagement.logs_pagination_kb(
+            name=name,
+            page=page,
+            total=len(pages)
+        )
+    )
+    await callback.answer()
+
