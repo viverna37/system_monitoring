@@ -134,5 +134,5 @@ class IKB:
                 )
             )
 
-            kb.adjust(3)
+            kb.adjust(3, 1)
             return kb.as_markup()

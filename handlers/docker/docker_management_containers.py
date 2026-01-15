@@ -28,7 +28,6 @@ async def docker_stats(callback: CallbackQuery):
             f"• uptime: {format_timedelta(c['uptime'])}\n\n"
         )
 
-
     await callback.message.edit_text(text=text, reply_markup=IKB.DockerManagement.get_containers_keyboard(containers))
     await callback.answer()
 
@@ -47,22 +46,23 @@ async def open_card(callback: CallbackQuery):
         f"• uptime: {format_timedelta(c['uptime'])}\n\n"
     )
 
+    await callback.message.edit_text(f"Docker card for {name} container\n",
+                                     reply_markup=IKB.DockerManagement.get_management_menu(name))
 
-    await callback.message.edit_text(f"Docker card for {name} container\n", reply_markup=IKB.DockerManagement.get_management_menu(name))
 
 @router.callback_query(F.data.startswith("reboot:"))
 async def open_card(callback: CallbackQuery):
     name = callback.data.split(":")[1]
     ok = reboot_container(name)
     if ok:
-        await callback.answer(f"Контейнер {name} успешно перезапущен")
+        await callback.message.answer(f"Контейнер {name} успешно перезапущен")
     else:
-        await callback.answer("Sorry caught traceback :(")
+        await callback.message.answer("Sorry caught traceback :(")
+
 
 @router.callback_query(F.data.startswith("logs:"))
 async def open_card(callback: CallbackQuery):
     name = callback.data.split(":")[1]
-
 
     pages = get_container_logs(name, limit=900)
     if not pages:
@@ -82,10 +82,16 @@ async def open_card(callback: CallbackQuery):
     )
     await callback.answer()
 
+
+@router.callback_query(F.data == "noop")
+async def noop(callback: CallbackQuery):
+    await callback.answer()
+
+
 @router.callback_query(LogsCb.filter())
 async def paginate_logs(
-    callback: CallbackQuery,
-    callback_data: LogsCb,
+        callback: CallbackQuery,
+        callback_data: LogsCb,
 ):
     name = callback_data.name
     page = callback_data.page
@@ -96,9 +102,14 @@ async def paginate_logs(
         return
 
     page = max(0, min(page, len(pages) - 1))
+    new_text = f"<pre>{pages[page]}</pre>"
+
+    if callback.message.text == new_text:
+        await callback.answer("Дальше нельзя")
+        return
 
     await callback.message.edit_text(
-        text=f"<pre>{pages[page]}</pre>",
+        text=new_text,
         parse_mode="HTML",
         reply_markup=IKB.DockerManagement.logs_pagination_kb(
             name=name,
@@ -107,4 +118,3 @@ async def paginate_logs(
         )
     )
     await callback.answer()
-

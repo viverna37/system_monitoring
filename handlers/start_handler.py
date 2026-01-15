@@ -12,13 +12,16 @@ router = Router()
 
 @router.message(Command('start'))
 async def start(message: Message):
-    await message.answer("Привет, я бот для мониторинга сервера Bozdyrev.Dev\n\n"
-                         "Пользуйся меню ниже", reply_markup=IKB.Menu.get_menu())
+    if message.from_user.id in [1414952718, 5122343544]:
+        await message.answer("Привет, я бот для мониторинга сервера Bozdyrev.Dev\n\n"
+                             "Пользуйся меню ниже", reply_markup=IKB.Menu.get_menu())
+
 
 @router.callback_query(F.data == "exit")
 async def start(callback: CallbackQuery):
     await callback.message.edit_text("Привет, я бот для мониторинга сервера Bozdyrev.Dev\n\n"
-                         "Пользуйся меню ниже", reply_markup=IKB.Menu.get_menu())
+                                     "Пользуйся меню ниже", reply_markup=IKB.Menu.get_menu())
+
 
 @router.callback_query(F.data == "exit_2")
 async def start(callback: CallbackQuery):
