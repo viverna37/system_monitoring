@@ -1,6 +1,7 @@
 from aiogram import F, Router
 from aiogram.types import CallbackQuery
 
+from keybords.ikb import IKB
 from utils.docker_monitor import docker_available, get_containers, format_timedelta
 
 router = Router()
@@ -32,5 +33,5 @@ async def docker_status(callback: CallbackQuery):
             f"• uptime: {format_timedelta(c['uptime'])}\n\n"
         )
 
-    await callback.message.edit_text(text, parse_mode="HTML")
+    await callback.message.edit_text(text, reply_markup=IKB.Back.get_menu())
     await callback.answer()

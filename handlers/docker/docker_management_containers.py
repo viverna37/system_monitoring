@@ -25,7 +25,6 @@ async def docker_stats(callback: CallbackQuery):
         status_icon = "🟢" if c["status"] == "running" else "🔴"
         text += (
             f"{status_icon} <b>{c['name']}</b>\n"
-            f"• status: {c['status']}\n"
             f"• uptime: {format_timedelta(c['uptime'])}\n\n"
         )
 

@@ -1,5 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
+
+from keybords.ikb import IKB
 from utils.docker_stats import get_docker_stats, format_mem, bytes_to_mb
 
 router = Router()
@@ -24,5 +26,5 @@ async def docker_stats(callback: CallbackQuery):
             f"↑ {bytes_to_mb(s['net_tx']):.1f} MB\n\n"
         )
 
-    await callback.message.edit_text(text)
+    await callback.message.edit_text(text, reply_markup=IKB.Back.get_menu())
     await callback.answer()

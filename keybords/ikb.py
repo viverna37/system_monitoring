@@ -7,94 +7,101 @@ class LogsCb(CallbackData, prefix="logs"):
     name: str
     page: int
 
+
 class IKB:
+    class Back:
+        @staticmethod
+        def get_menu() -> InlineKeyboardMarkup:
+            kb = InlineKeyboardBuilder()
+            kb.add(
+                InlineKeyboardButton(text="⬅️ Назад", callback_data="exit")
+            )
+            kb.adjust(1)
+            return kb.as_markup()
+
     class Menu:
         @staticmethod
         def get_menu() -> InlineKeyboardMarkup:
-            keyboard = InlineKeyboardBuilder()
+            kb = InlineKeyboardBuilder()
 
-            keyboard.add(InlineKeyboardButton(text="Мониторинг Server", callback_data="system_monitoring"))
-            keyboard.add(InlineKeyboardButton(text="Server menu", callback_data="server_menu"))
-            keyboard.add(InlineKeyboardButton(text="Docker menu", callback_data="docker_menu"))
+            kb.add(InlineKeyboardButton(text="🖥 Мониторинг сервера", callback_data="system_monitoring"))
+            kb.add(InlineKeyboardButton(text="⚙️ Server menu", callback_data="server_menu"))
+            kb.add(InlineKeyboardButton(text="🐳 Docker menu", callback_data="docker_menu"))
 
-            keyboard.adjust(1)
-
-            return keyboard.as_markup()
+            kb.adjust(1)
+            return kb.as_markup()
 
     class Server:
         @staticmethod
         def get_menu() -> InlineKeyboardMarkup:
-            keyboard = InlineKeyboardBuilder()
+            kb = InlineKeyboardBuilder()
 
-            keyboard.add(InlineKeyboardButton(text="Создаить схему", callback_data="server_menu"))
-            keyboard.add(InlineKeyboardButton(text="Перезапуск", callback_data="server_menu"))
-            keyboard.add(InlineKeyboardButton(text="Выключение", callback_data="server_menu"))
-            keyboard.add(InlineKeyboardButton(text="123", callback_data="213"))
-            keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit"))
-            keyboard.adjust(1)
+            kb.add(InlineKeyboardButton(text="🔄 Перезапуск", callback_data="server_menu"))
+            kb.add(InlineKeyboardButton(text="⛔ Выключение", callback_data="server_menu"))
+            kb.add(InlineKeyboardButton(text="🧪 Тест", callback_data="213"))
+            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="exit"))
 
-            return keyboard.as_markup()
+            kb.adjust(1)
+            return kb.as_markup()
 
     class Docker:
         @staticmethod
         def get_menu() -> InlineKeyboardMarkup:
+            kb = InlineKeyboardBuilder()
 
-            keyboard = InlineKeyboardBuilder()
+            kb.add(InlineKeyboardButton(text="📊 Мониторинг Docker", callback_data="docker_monitoring"))
+            kb.add(InlineKeyboardButton(text="📈 Статистика Docker", callback_data="docker_stats"))
+            kb.add(InlineKeyboardButton(text="🛠 Управление", callback_data="docker_management"))
+            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="exit"))
 
-            keyboard.add(InlineKeyboardButton(text="Мониторинг Docker", callback_data="docker_monitoring"))
-            keyboard.add(InlineKeyboardButton(text="Статистика Docker", callback_data="docker_stats"))
-            keyboard.add(InlineKeyboardButton(text="Управление", callback_data="docker_management"))
-            keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit"))
-            keyboard.adjust(1)
-
-
-            return keyboard.as_markup()
+            kb.adjust(1)
+            return kb.as_markup()
 
     class DockerManagement:
         @staticmethod
         def get_menu() -> InlineKeyboardMarkup:
+            kb = InlineKeyboardBuilder()
 
-            keyboard = InlineKeyboardBuilder()
+            kb.add(InlineKeyboardButton(text="🧩 Создать схему", callback_data="create_schemas"))
+            kb.add(InlineKeyboardButton(text="📦 Контейнеры", callback_data="containers"))
+            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="exit_2"))
 
-            keyboard.add(InlineKeyboardButton(text="Создать схему", callback_data="create_schemas"))
-            keyboard.add(InlineKeyboardButton(text="Контейнеры", callback_data="containers"))
-            keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit_2"))
-
-            keyboard.adjust(1)
-
-            return keyboard.as_markup()
+            kb.adjust(1)
+            return kb.as_markup()
 
         @staticmethod
         def get_management_menu(name: str) -> InlineKeyboardMarkup:
+            kb = InlineKeyboardBuilder()
 
-            keyboard = InlineKeyboardBuilder()
+            kb.add(InlineKeyboardButton(text="🔄 Перезагрузить", callback_data=f"reboot:{name}"))
+            kb.add(InlineKeyboardButton(text="📄 Логи", callback_data=f"logs:{name}"))
+            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="exit_2"))
 
-            keyboard.add(InlineKeyboardButton(text="Перезагрузить", callback_data=f"reboot:{name}"))
-            keyboard.add(InlineKeyboardButton(text="Логи", callback_data=f"logs:{name}"))
-            keyboard.add(InlineKeyboardButton(text="Назад", callback_data="exit_2"))
-
-            keyboard.adjust(1)
-
-            return keyboard.as_markup()
+            kb.adjust(1)
+            return kb.as_markup()
 
         @staticmethod
         def get_containers_keyboard(containers: list) -> InlineKeyboardMarkup:
-            keyboard = InlineKeyboardBuilder()
+            kb = InlineKeyboardBuilder()
 
-            for i in containers:
-                keyboard.add(InlineKeyboardButton(text=i['image'], callback_data=f"card:{i['name']}"))
+            for c in containers:
+                kb.add(
+                    InlineKeyboardButton(
+                        text=f"📦 {c['name']}",
+                        callback_data=f"card:{c['name']}"
+                    )
+                )
 
-            keyboard.add(InlineKeyboardButton(text="Назад", callback_data="back_2"))
+            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="back_2"))
+            kb.adjust(1)
+            return kb.as_markup()
 
-            keyboard.adjust(1)
-
-            return keyboard.as_markup()
         @staticmethod
         def logs_pagination_kb(
-                name: str,
-                page: int,
-                total: int,
-        ):
+            name: str,
+            page: int,
+            total: int,
+        ) -> InlineKeyboardMarkup:
             kb = InlineKeyboardBuilder()
 
             if page > 0:
@@ -107,7 +114,7 @@ class IKB:
 
             kb.add(
                 InlineKeyboardButton(
-                    text=f"{page + 1}/{total}",
+                    text=f"📄 {page + 1}/{total}",
                     callback_data="noop"
                 )
             )
