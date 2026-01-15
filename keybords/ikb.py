@@ -92,7 +92,7 @@ class IKB:
                     )
                 )
 
-            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="exit_2"))
+            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="exit"))
             kb.adjust(1)
             return kb.as_markup()
 

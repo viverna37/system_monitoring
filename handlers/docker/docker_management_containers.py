@@ -1,3 +1,5 @@
+import html
+
 from aiogram import Router, F
 
 from aiogram.types import CallbackQuery, InlineKeyboardButton
@@ -109,11 +111,11 @@ async def paginate_logs(
         return
 
     await callback.message.edit_text(
-        text=new_text,
+        text=f"<pre>{html.escape(pages[0])}</pre>",
         parse_mode="HTML",
         reply_markup=IKB.DockerManagement.logs_pagination_kb(
             name=name,
-            page=page,
+            page=0,
             total=len(pages)
         )
     )
