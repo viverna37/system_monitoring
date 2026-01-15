@@ -48,7 +48,7 @@ async def open_card(callback: CallbackQuery):
     )
 
 
-    await callback.message.answer(f"Docker card for {name} container\n", reply_markup=IKB.DockerManagement.get_management_menu(name))
+    await callback.message.edit_text(f"Docker card for {name} container\n", reply_markup=IKB.DockerManagement.get_management_menu(name))
 
 @router.callback_query(F.data.startswith("reboot:"))
 async def open_card(callback: CallbackQuery):

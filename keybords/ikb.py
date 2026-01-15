@@ -92,7 +92,7 @@ class IKB:
                     )
                 )
 
-            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="back_2"))
+            kb.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="exit_2"))
             kb.adjust(1)
             return kb.as_markup()
 
@@ -126,6 +126,13 @@ class IKB:
                         callback_data=LogsCb(name=name, page=page + 1).pack()
                     )
                 )
+
+            kb.add(
+                InlineKeyboardButton(
+                    text=f"⬅️ Назад",
+                    callback_data="exit_2"
+                )
+            )
 
             kb.adjust(3)
             return kb.as_markup()
